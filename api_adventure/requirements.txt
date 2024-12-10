@@ -1,0 +1,10 @@
+connexion==2.14.2
+flask-marshmallow==0.15.0
+Flask-SQLAlchemy==3.0.5
+marshmallow-sqlalchemy==0.29.0
+
+
+
+
+
+
