@@ -2,7 +2,7 @@ import flask
 from flask import request,jsonify
 from flask_cors import CORS
 from db_config import db, app
-from model import SalesPerson, salespersons_schema, salesperson_schema
+from model import SalesPerson, salespersons_schema, salesperson_schema, Product, products_schema, product_schema
 
 import model
 
@@ -55,14 +55,6 @@ def update_salesperson():
     if existing_salesperson:
         update_salesperson=salesperson_schema.load(salesperson, session=db.session)
         existing_salesperson.businessentityid = update_salesperson.businessentityid
-        existing_salesperson.territoryid = update_salesperson.territoryid
-        existing_salesperson.salesquota = update_salesperson.salesquota
-        existing_salesperson.bonus = update_salesperson.bonus
-        existing_salesperson.commissionpct = update_salesperson.commissionpct
-        existing_salesperson.salesytd = update_salesperson.salesytd
-        existing_salesperson.saleslastyear = update_salesperson.saleslastyear
-        existing_salesperson.rowguid = update_salesperson.rowguid
-        existing_salesperson.modifieddate = update_salesperson.modifieddate
         db.session.merge(existing_salesperson)
         db.session.commit()
         return salesperson_schema.dump(existing_salesperson), 201
@@ -80,5 +72,53 @@ def remove_salesperson():
         return jsonify({ 'Ok': 'Object was successfully removed ' }), 200 
     else:
         return jsonify({ 'error': 'Missing object to be deleted' }), 400
-    
+
+###################################################################################################################
+
+@app.route("/api/resources/product/all", methods=["GET"])
+def product_all():
+    all_product = Product.query.all()
+    return products_schema.dump(all_product)
+
+@app.route("/api/resources/product/new", methods=["POST"])
+def create_product():
+    product = request.get_json(force=True)
+    id = product.get("productid")
+    existing_product = Product.query.filter(Product.productid == id).one_or_none()
+
+    if existing_product is None:
+        new_product = product_schema.load(product, session=db.session)
+        db.session.add(new_product)
+        db.session.commit()
+        return product_schema.dump(new_product), 201
+    else:
+        return jsonify({ 'error': 'Missing input' }), 400
+
+@app.route("/api/resources/product/update", methods=["PUT"])
+def update_product():
+    product = request.get_json(force=True)
+    id = product.get("productid")
+    existing_product = Product.query.filter(Product.productid == id).one_or_none()
+
+    if existing_product:
+        update_product=product_schema.load(product, session=db.session)
+        existing_product.productid = update_product.productid
+        db.session.merge(existing_product)
+        db.session.commit()
+        return product_schema.dump(existing_product), 201
+    else:
+        return jsonify({ 'error': 'Missing object to be updated' }), 400
+
+@app.route("/api/resources/product/remove", methods=["DELETE"])
+def remove_product():
+    product = request.get_json(force=True)
+    id = product.get("productid")
+    existing_product = Product.query.filter(Product.productid == id).one_or_none()
+    if existing_product:
+        db.session.delete(existing_product)
+        db.session.commit()
+        return jsonify({ 'Ok': 'Object was successfully removed ' }), 200 
+    else:
+        return jsonify({ 'error': 'Missing object to be deleted' }), 400
+
 app.run()

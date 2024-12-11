@@ -21,6 +21,35 @@ class SalesPerson(db.Model):
     rowguid = db.Column(db.String(36))
     modifieddate = db.Column(db.DateTime)
 
+class Product(db.Model):
+    __tablename__ = "product"
+    productid = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    productnumber = db.Column(db.String())
+    makeflag = db.Column(db.String())
+    finishedgoodsflag = db.Column(db.String())
+    color = db.Column(db.String())
+    safetystocklevel = db.Column(db.Integer)
+    reorderpoint = db.Column(db.Integer)
+    standardcost = db.Column(db.Float)
+    listprice = db.Column(db.Float)
+    size = db.Column(db.String())
+    sizeunitmeasurecode = db.Column(db.String())
+    weightunitmeasurecode = db.Column(db.String())
+    weight = db.Column(db.Float)
+    daystomanufacture = db.Column(db.Integer)
+    productline = db.Column(db.String())
+    class_ = db.Column(db.String())
+    style = db.Column(db.String())
+    productsubcategoryid = db.Column(db.Integer)
+    productmodelid = db.Column(db.Integer)
+    sellstartdate = db.Column(db.DateTime)
+    sellenddate = db.Column(db.DateTime)
+    discontinueddate = db.Column(db.DateTime)
+    rowguid = db.Column(db.String(36))
+    modifieddate = db.Column(db.DateTime)
+
+
 #Create code for serialization
 # class BookSchema(ma.SQLAlchemyAutoSchema):
 #     class Meta:
@@ -34,9 +63,17 @@ class SalesPersonSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         sqla_session = db.session
 
+class ProductSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Product
+        load_instance = True
+        sqla_session = db.session
+
 # book_schema = BookSchema()
 # books_schema = BookSchema(many=True)
 
 salesperson_schema = SalesPersonSchema()
 salespersons_schema = SalesPersonSchema(many=True)
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
 print ("The model has been successfully created ")
